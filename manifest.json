@@ -1,21 +1,21 @@
 {
-  "name": "سیستم جستجوی فرایند",
-  "short_name": "فرایند",
-  "start_url": "./",
+  "name": "Project Manager",
+  "short_name": "ProjMgr",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#6200ea",
-  "orientation": "portrait",
+  "background_color": "#f7f7f7",
+  "theme_color": "#3498db",
+  "description": "A modern project and process management system with advanced search capabilities.",
   "icons": [
     {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
+      
     },
     {
-      "src": "icon-512.png",
+      "src": "icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
+  "lang": "fa-IR",
+  "dir": "rtl"
 }
