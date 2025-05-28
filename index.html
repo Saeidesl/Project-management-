@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-  <link rel="manifest" href="manifest.json">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>سیستم مدیریت پروژه‌ها</title>
@@ -68,7 +67,7 @@
       display: block;
     }
     
-    /* استایل تب پروژه‌ها (از index.html شما) */
+    /* استایل تب پروژه‌ها */
     .header-section {
       padding: 10px;
       background: white;
@@ -129,7 +128,7 @@
       font-size: 0.85rem;
     }
     
-    /* استایل تب جستجوی پیشرفته (از geymat.html شما) */
+    /* استایل تب جستجوی پیشرفته */
     .container {
       padding: 15px;
     }
@@ -230,6 +229,50 @@
       color: var(--primary-color);
       display: none;
     }
+
+    /* استایل‌های جدید اضافه شده */
+    .fixed-row {
+      position: sticky;
+      top: 0;
+      background: white;
+      z-index: 10;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .process-card {
+      background: white;
+      border-radius: 8px;
+      padding: 12px;
+      margin: 8px 0;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      border-right: 4px solid var(--primary-color);
+      transition: transform 0.2s;
+    }
+    
+    .process-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    
+    .process-card strong {
+      color: var(--primary-color);
+    }
+    
+    .process-card:nth-child(odd) {
+      border-right-color: #3498db;
+    }
+    
+    .process-card:nth-child(even) {
+      border-right-color: #e74c3c;
+    }
+    
+    .process-card:nth-child(3n) {
+      border-right-color: #2ecc71;
+    }
+    
+    .process-card:nth-child(4n) {
+      border-right-color: #f39c12;
+    }
   </style>
 </head>
 <body>
@@ -288,20 +331,22 @@
     
     // --- توابع عمومی ---
     function openTab(tabName) {
-      document.querySelectorAll('.tab-content').forEach(tab => {
-        tab.classList.remove('active');
-      });
-      document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-      });
-      
-      document.getElementById(tabName).classList.add('active');
-      event.currentTarget.classList.add('active');
-      
-      if (tabName === 'projects' && !window.allData) {
-        fetchProjectsData();
-      }
-    }
+  document.querySelectorAll('.tab-content').forEach(tab => {
+    tab.classList.remove('active');
+  });
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  
+  document.getElementById(tabName).classList.add('active');
+  event.currentTarget.classList.add('active');
+  
+  // تغییر این قسمت برای جلوگیری از دریافت مجدد داده‌ها
+  if (tabName === 'projects' && !window.dataLoaded) {
+    fetchProjectsData();
+    window.dataLoaded = true; // علامتگذاری که داده‌ها یکبار بارگیری شده‌اند
+  }
+}
 
     function showLoader(id) {
       document.getElementById(id).style.display = "block";
@@ -313,6 +358,7 @@
 
     // --- توابع تب پروژه‌ها ---
     let allData = [];
+    let allProcesses = {}; // شیء جدید برای ذخیره تمام فرایندها
     let expandedRowId = null;
 
     async function fetchProjectsData() {
@@ -323,12 +369,32 @@
         if (!response.ok) throw new Error("خطا در ارتباط با سرور");
         
         allData = await response.json();
+        
+        // دریافت اطلاعات تمام فرایندها به صورت همزمان
+        await fetchAllProcesses();
+        
         renderTable(allData);
       } catch (error) {
         alert("خطا در دریافت اطلاعات: " + error.message);
       } finally {
         hideLoader('loader');
       }
+    }
+
+    // تابع جدید برای دریافت تمام فرایندها
+    async function fetchAllProcesses() {
+      const promises = allData.map(item => 
+        fetch(`${SCRIPT_URL}?code=${encodeURIComponent(item[0])}`)
+          .then(res => res.json())
+          .then(processes => {
+            allProcesses[item[0]] = processes;
+          })
+          .catch(() => {
+            allProcesses[item[0]] = [];
+          })
+      );
+      
+      await Promise.all(promises);
     }
 
     function filterByCode() {
@@ -357,65 +423,79 @@
       });
     }
 
-    async function toggleProcessDetails(code, rowId) {
+    function toggleProcessDetails(code, rowId) {
       const row = document.getElementById(rowId);
       const nextRow = row.nextElementSibling;
       
       if (nextRow && nextRow.classList.contains("process-details-row")) {
         nextRow.remove();
+        row.classList.remove("fixed-row");
         expandedRowId = null;
         return;
       }
       
       if (expandedRowId && expandedRowId !== rowId) {
-        const prevExpanded = document.querySelector(`#${expandedRowId} + .process-details-row`);
-        if (prevExpanded) prevExpanded.remove();
+        const prevExpanded = document.querySelector(`#${expandedRowId}`);
+        const prevDetails = document.querySelector(`#${expandedRowId} + .process-details-row`);
+        if (prevExpanded) prevExpanded.classList.remove("fixed-row");
+        if (prevDetails) prevDetails.remove();
       }
       
       expandedRowId = rowId;
-      showLoader('loader');
+      row.classList.add("fixed-row");
       
-      try {
-        const response = await fetch(`${SCRIPT_URL}?code=${encodeURIComponent(code)}`);
-        if (!response.ok) throw new Error("خطا در دریافت جزئیات");
-        
-        const processes = await response.json();
-        showProcessDetails(row, code, processes);
-      } catch (error) {
-        alert("خطا: " + error.message);
-      } finally {
-        hideLoader('loader');
-      }
+      // استفاده از داده‌های از پیش بارگیری شده
+      const processes = allProcesses[code] || [];
+      showProcessDetails(row, code, processes);
     }
 
-    function showProcessDetails(row, code, processes) {
-      const detailsRow = document.createElement("tr");
-      detailsRow.classList.add("process-details-row");
-      
-      const content = processes.length 
-        ? processes.map(p => `
-          <div class="process-item">
-            <strong>${p[0] || 'بدون عنوان'}:</strong> ${p[1] || 'بدون توضیح'}
-          </div>
-        `).join("")
-        : `<div class="process-item">هیچ فرایندی یافت نشد</div>`;
-      
-      detailsRow.innerHTML = `
-        <td colspan="3" class="process-details">
-          <div style="padding: 5px;">
-            <h4 style="margin: 0 0 5px 0; font-size: 0.95rem;">فرایندهای کد ${code}</h4>
-            ${content}
-          </div>
-        </td>
-      `;
-      
-      row.after(detailsRow);
-    }
+
+  // ... کدهای قبلی بدون تغییر ...
+
+  function showProcessDetails(row, code, processes) {
+    const detailsRow = document.createElement("tr");
+    detailsRow.classList.add("process-details-row");
+    
+    const content = processes.length 
+      ? processes.map((p, index) => `
+        <div class="process-card" onclick="fillAdvancedSearch('${code}', '${index + 1}')">
+          <strong>${p[1] || 'بدون عنوان'}:</strong> ${p[0] || 'بدون توضیح'}
+        </div>
+      `).join("")
+      : `<div class="process-card">هیچ فرایندی یافت نشد</div>`;
+    
+    detailsRow.innerHTML = `
+      <td colspan="3" class="process-details">
+        <div style="padding: 5px;">
+          <h4 style="margin: 0 0 5px 0; font-size: 0.95rem;">فرایندهای کد ${code}</h4>
+          ${content}
+        </div>
+      </td>
+    `;
+    
+    row.after(detailsRow);
+  }
+
+  // تابع جدید برای پر کردن فرم جستجوی پیشرفته
+  function fillAdvancedSearch(workCode, processNum) {
+    // تغییر به تب جستجوی پیشرفته
+    openTab('advanced');
+    
+    // پر کردن فیلدها
+    document.getElementById('workCode').value = workCode;
+    document.getElementById('processNum').value = processNum;
+    
+    // به‌روزرسانی پیشرفت
+    updateProgress();
+  }
+
+  // ... بقیه کدها بدون تغییر ...
+
 
     // --- توابع تب جستجوی پیشرفته ---
     function updateProgress() {
       const workCode = document.getElementById('workCode').value;
-      const processNum = document.getElementById('processNum').value;
+      const processNum = document.getElementById('processNum').value + 1;
       
       document.getElementById('step1').classList.toggle('active', !!workCode);
       document.getElementById('line1').classList.toggle('active', !!workCode);
@@ -424,50 +504,50 @@
     }
 
     async function advancedSearch() {
-  const workCode = document.getElementById('workCode').value;
-  const processNum = document.getElementById('processNum').value;
-  const resultBox = document.getElementById('result');
-  const spinner = document.getElementById('spinner');
-  const searchText = document.getElementById('searchText');
+      const workCode = document.getElementById('workCode').value;
+      const processNum = document.getElementById('processNum').value;
+      const resultBox = document.getElementById('result');
+      const spinner = document.getElementById('spinner');
+      const searchText = document.getElementById('searchText');
 
-  if (!workCode || !processNum) {
-    resultBox.style.display = 'block';
-    resultBox.className = 'result error';
-    resultBox.textContent = 'لطفاً تمام فیلدها را پر کنید.';
-    return;
-  }
+      if (!workCode || !processNum) {
+        resultBox.style.display = 'block';
+        resultBox.className = 'result error';
+        resultBox.textContent = 'لطفاً تمام فیلدها را پر کنید.';
+        return;
+      }
 
-  searchText.textContent = 'در حال جستجو...';
-  spinner.style.display = 'inline-block';
-  resultBox.style.display = 'none';
-  document.getElementById('step3').classList.remove('active');
+      searchText.textContent = 'در حال جستجو...';
+      spinner.style.display = 'inline-block';
+      resultBox.style.display = 'none';
+      document.getElementById('step3').classList.remove('active');
 
-  try {
-    const response = await fetch(
-      `${SCRIPT_URL}?workCode=${workCode}&processNum=${processNum}`
-    );
-    const data = await response.json();
-    
-    if (data.success) {
-      document.getElementById('step3').classList.add('active');
-      resultBox.innerHTML = `
-        <strong>نام فرایند:</strong> ${data.processName}<br>
-        <strong>قیمت:</strong> ${data.price}
-      `;
-      resultBox.className = 'result success';
-    } else {
-      resultBox.className = 'result error';
-      resultBox.textContent = data.message || 'نتیجه‌ای یافت نشد.';
+      try {
+        const response = await fetch(
+          `${SCRIPT_URL}?workCode=${workCode}&processNum=${processNum}`
+        );
+        const data = await response.json();
+        
+        if (data.success) {
+          document.getElementById('step3').classList.add('active');
+          resultBox.innerHTML = `
+            <strong>نام فرایند:</strong> ${data.processName}<br>
+            <strong>قیمت:</strong> ${data.price}
+          `;
+          resultBox.className = 'result success';
+        } else {
+          resultBox.className = 'result error';
+          resultBox.textContent = data.message || 'نتیجه‌ای یافت نشد.';
+        }
+      } catch (err) {
+        resultBox.className = 'result error';
+        resultBox.textContent = 'خطا در ارتباط با سرور';
+      } finally {
+        resultBox.style.display = 'block';
+        searchText.textContent = 'جستجو';
+        spinner.style.display = 'none';
+      }
     }
-  } catch (err) {
-    resultBox.className = 'result error';
-    resultBox.textContent = 'خطا در ارتباط با سرور';
-  } finally {
-    resultBox.style.display = 'block';
-    searchText.textContent = 'جستجو';
-    spinner.style.display = 'none';
-  }
-}
 
     // بارگیری اولیه داده‌ها
     window.onload = fetchProjectsData;
