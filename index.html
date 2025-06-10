@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>پروژه‌ها</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #4361ee;
+      --secondary-color: #3f37c9;
+      --accent-color: #4895ef;
+      --success-color: #4cc9f0;
+      --danger-color: #f72585;
+      --warning-color: #f8961e;
+      --light-color: #f8f9fa;
+      --dark-color: #212529;
+      --gray-color: #6c757d;
+      --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      background: #f5f7fa;
+      color: var(--dark-color);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    
+    body.no-scroll {
+      overflow: hidden;
+    }
+    
+    /* استایل هدر و دکمه بروزرسانی */
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      background: white;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .app-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-right: auto;
+    }
+    
+    .refresh-btn {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 2px 8px rgba(67, 97, 238, 0.3);
+    }
+    
+    .refresh-btn:hover {
+      background-color: var(--secondary-color);
+      transform: translateY(-2px);
+    }
+    
+    .refresh-btn:active {
+      transform: translateY(0);
+    }
+    
+    .refresh-btn i {
+      font-size: 1.2rem;
+    }
+    
+    /* استایل کارت‌ها */
+    .container {
+      padding: 1rem;
+    }
+    
+    .project-container, .process-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .card, .process-card {
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+    }
+    
+    .card:hover, .process-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
+    
+    .card::after, .process-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0) 20%);
+      pointer-events: none;
+    }
+    
+    /* استایل اسلایدر تصاویر */
+    .carousel {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      height: 450px;
+      border-radius: 16px 16px 0 0;
+    }
+    
+    .carousel-track {
+      display: flex;
+      transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      width: 100%;
+      height: 100%;
+    }
+    
+    .carousel-track img {
+      width: 100%;
+      flex-shrink: 0;
+      object-fit: cover;
+      display: block;
+    }
+    
+    .carousel-nav {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 1rem;
+      pointer-events: none;
+    }
+    
+    .carousel-btn {
+      pointer-events: auto;
+      background: rgba(255, 255, 255, 0.8);
+      color: var(--dark-color);
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .carousel-btn:hover {
+      background: white;
+      transform: scale(1.1);
+    }
+    
+    .carousel-btn:active {
+      transform: scale(0.95);
+    }
+    
+    .dots {
+      position: absolute;
+      bottom: 15px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+    }
+    
+    .dot {
+      width: 8px;
+      height: 8px;
+      background-color: rgba(255, 255, 255, 0.6);
+      border-radius: 50%;
+      transition: var(--transition);
+    }
+    
+    .dot.active {
+      background-color: white;
+      width: 20px;
+      border-radius: 4px;
+    }
+    
+    /* استایل محتوای کارت */
+    .card-body, .process-body {
+      padding: 1.2rem;
+    }
+    
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--dark-color);
+    }
+    
+    .card-detail {
+      font-size: 0.9rem;
+      color: var(--gray-color);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.3rem;
+    }
+    
+    .card-detail i {
+      font-size: 0.8rem;
+    }
+    
+    /* استایل مودال‌ها */
+    .modal {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+      animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .modal-content {
+      position: relative;
+      background: white;
+      border-radius: 20px;
+      padding: 1.5rem;
+      width: 90%;
+      max-width: 500px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding-top: 0; /* حذف padding-top */
+  border-radius: 20px; /* حفظ انحناهای مودال */
+
+      animation: slideUp 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .modal-header {
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 10;
+  padding: 1rem 1.5rem;
+  margin: 0 -1.5rem 0 -1.5rem; /* تغییر در margin-top به 0 */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #eee;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+
+.modal-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin: 0;
+  padding: 0;
+}
+
+.close-btn {
+  background: var(--danger-color);
+  color: white;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+  flex-shrink: 0;
+  margin-right: auto;
+  margin-left: 1rem;
+}
+
+.search-container {
+  position: sticky;
+  top: 60px; /* ارتفاع هدر مودال */
+  background: white;
+  z-index: 10;
+  padding: 1rem 0;
+  margin: 0 -1.5rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.modal-content {
+  padding-top: 0.5rem;
+}
+    
+    
+
+    
+    .close-btn:hover {
+      background: #d1145a;
+      transform: rotate(90deg);
+    }
+    
+    /* استایل فیلدهای فرم */
+    .field {
+      margin-bottom: 1.2rem;
+    }
+    
+    .field label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--gray-color);
+      font-weight: 500;
+    }
+    
+    .field input {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border: 1px solid #e0e0e0;
+      border-radius: 12px;
+      font-size: 1rem;
+      transition: var(--transition);
+      background-color: #f9f9f9;
+    }
+    
+    .field input:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
+    }
+    
+    .field input:not([readonly]) {
+      background-color: #fff;
+      border: 1px solid #ddd;
+    }
+    
+    /* استایل دکمه‌ها */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.8rem 1.2rem;
+      border-radius: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      font-size: 0.95rem;
+      gap: 0.5rem;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--secondary-color);
+      transform: translateY(-2px);
+    }
+    
+    .btn-success {
+      background-color: var(--success-color);
+      color: white;
+    }
+    
+    .btn-whatsapp {
+      background-color: #25D366;
+      color: white;
+    }
+    
+    .btn-telegram {
+      background-color: #0088cc;
+      color: white;
+    }
+    
+    .btn-share {
+      background-color: #9b59b6;
+      color: white;
+    }
+    
+    .btn-group {
+      display: flex;
+      gap: 0.8rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+    
+    /* استایل پیام */
+    .message-box {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: var(--success-color);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-weight: 500;
+      display: none;
+      z-index: 9999;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      animation: slideDown 0.3s ease-out;
+    }
+    
+    @keyframes slideDown {
+      from { transform: translate(-50%, -30px); opacity: 0; }
+      to { transform: translate(-50%, 0); opacity: 1; }
+    }
+    
+    /* استایل فرایندها */
+    .process-card {
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .process-icon {
+      width: 40px;
+      height: 40px;
+      background-color: var(--primary-color);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      flex-shrink: 0;
+    }
+    
+    .process-info {
+      flex: 1;
+    }
+    
+    .process-number {
+      font-size: 0.9rem;
+      color: var(--gray-color);
+      margin-bottom: 0.3rem;
+    }
+    
+    .process-name {
+      font-weight: 500;
+    }
+    
+    /* انیمیشن‌های اضافی */
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    .pulse {
+      animation: pulse 1.5s infinite;
+    }
+    
+    /* استایل برای دکمه یک سایز */
+    .count-field {
+      display: flex;
+      gap: 0.8rem;
+      align-items: center;
+    }
+    
+    .count-field input {
+      flex: 1;
+    }
+    
+    .half-btn {
+      background-color: var(--accent-color);
+      color: white;
+      border: none;
+      padding: 0.7rem 1rem;
+      border-radius: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+    
+    .half-btn:hover {
+      background-color: #3a7bc8;
+      transform: translateY(-2px);
+    }
+    
+    .half-btn:active {
+      transform: translateY(0);
+    }
+    
+    /* ریسپانسیو */
+    @media (max-width: 480px) {
+      .app-title {
+        font-size: 1.2rem;
+      }
+      
+      .modal-content {
+        width: 95%;
+        padding: 1.2rem;
+      }
+      
+      .btn-group {
+        flex-direction: column;
+        gap: 0.6rem;
+      }
+      
+      .btn {
+        width: 100%;
+      }
+    }
+    
+    .modal {
+  padding: 0; /* اطمینان از عدم وجود padding اضافه */
+}
+
+.search-container {
+  padding: 0.8rem 1.5rem;
+  margin: 0 -1.5rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <h1 class="app-title">پروژه‌های در حال اجرا</h1>
+    <button id="refreshBtn" class="refresh-btn" onclick="refreshData()" title="بروزرسانی">
+      <i class="fas fa-sync-alt"></i>
+    </button>
+  </header>
+  
+  <div class="container">
+    <div id="projectContainer" class="project-container"></div>  
+  </div>
+  
+  <!-- مودال فرایندها -->
+<div id="processModal" class="modal">
+  <div class="modal-content">
+<div class="modal-header">
+  <h3 class="modal-title">لیست فرایندها</h3>
+  <button class="close-btn" onclick="closeModal('processModal')">
+    <i class="fas fa-times"></i>
+  </button>
+</div>
+    
+    <!-- فیلد جستجو با container جدید -->
+    <div class="search-container">
+      <div class="field" style="margin-bottom: 0; position: relative;">
+        <input id="processSearch" type="text" placeholder="جستجوی فرایندها..." 
+               style="padding-right: 2.5rem;">
+        <button id="clearSearch" style="position: absolute; left: 10px; top: 50%; 
+                transform: translateY(-50%); background: none; border: none; 
+                color: var(--gray-color); cursor: pointer; display: none;">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+    
+    <div id="processList" class="process-list"></div>
+  </div>
+</div>
+
+  <!-- مودال جزئیات فرایند -->
+  <div id="detailModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">جزئیات فرایند</h3>
+        <button class="close-btn" onclick="closeModal('detailModal')">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="field">
+        <label>کد کار:</label>
+        <input id="fCode" readonly>
+      </div>
+      
+      <div class="field">
+        <label>شماره فرایند:</label>
+        <input id="fNumber" readonly>
+      </div>
+      
+      <div class="field">
+        <label>اسم فرایند:</label>
+        <input id="fName" readonly>
+      </div>
+      
+      <div class="field">
+        <label>تعداد:</label>
+        <div class="count-field">
+          <input id="fCount">
+          <button class="half-btn" onclick="divideCountByTwo()">یک سایز</button>
+        </div>
+      </div>
+      
+      <div class="field">
+        <label>قیمت:</label>
+        <input id="fPrice" readonly>
+      </div>
+      
+      <div class="field">
+        <label>تاریخ:</label>
+        <input id="fDate" readonly>
+      </div>
+      
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="copyProcessDetails()">
+          <i class="far fa-copy"></i> کپی اطلاعات
+        </button>
+        <button class="btn btn-whatsapp" onclick="shareProcessVia('whatsapp')">
+          <i class="fab fa-whatsapp"></i> واتس‌اپ
+        </button>
+        <button class="btn btn-telegram" onclick="shareProcessVia('telegram')">
+          <i class="fab fa-telegram"></i> تلگرام
+        </button>
+        <button class="btn btn-share" onclick="shareProcessWithWebAPI()">
+          <i class="fas fa-share-alt"></i> اشتراک
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="messageBox" class="message-box"></div>
+
+<script>
+  let allData = {};
+
+  async function fetchFromServer() {
+    const res = await fetch('https://script.google.com/macros/s/AKfycbyjTodhyX7U4Gi4l8KOcPSukDP05deyhaO0Y3GGmKLlx0M0TVFXLyAXYtKDhHIyZENeAw/exec');
+    const data = await res.json();
+    console.log('داده‌های دریافتی از سرور:', data); // این خط برای بررسی
+
+    return data;
+  }
+
+  function loadFromCache() {
+    const cached = localStorage.getItem('projectData');
+    return cached ? JSON.parse(cached) : null;
+  }
+
+  function saveToCache(data) {
+    localStorage.setItem('projectData', JSON.stringify(data));
+  }
+
+  function showMessage(text) {
+    const msgBox = document.getElementById('messageBox');
+    msgBox.innerText = text;
+    msgBox.style.display = 'block';
+    setTimeout(() => msgBox.style.display = 'none', 3000);
+  }
+
+  function renderProjects(projects) {
+    const container = document.getElementById('projectContainer');
+    container.innerHTML = '';
+
+    projects.forEach((proj, index) => {
+      const images = (proj.images || '').split('|').map(i => i.trim()).filter(Boolean);
+      let currentIndex = 0;
+
+      const card = document.createElement('div');
+      card.className = 'card';
+
+      const dotsHtml = images.map((_, i) =>
+        `<span class="dot ${i === 0 ? 'active' : ''}" data-i="${i}"></span>`).join('');
+
+      card.innerHTML = `
+        <div class="carousel">
+          <div class="carousel-track" id="track-${index}">
+            ${images.map(img => `<img src="${img || ''}">`).join('')}
+          </div>
+          <div class="carousel-nav">
+            <button class="carousel-btn" id="prev-${index}"><i class="fas fa-chevron-right"></i></button>
+            <button class="carousel-btn" id="next-${index}"><i class="fas fa-chevron-left"></i></button>
+          </div>
+          <div class="dots">${dotsHtml}</div>
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">${proj.name}</h3>
+          <div class="card-detail"><i class="fas fa-hashtag"></i> کد پروژه: ${proj.code}</div>
+          <div class="card-detail"><i class="fas fa-cubes"></i> تعداد: ${proj.count}</div>
+        </div>
+      `;
+
+      const track = card.querySelector(`#track-${index}`);
+      const dots = card.querySelectorAll('.dot');
+
+      function updateImage() {
+        track.style.transform = `translateX(-${currentIndex * 100}%)`;
+        dots.forEach((d, i) => d.classList.toggle('active', i === currentIndex));
+      }
+
+      card.querySelector(`#prev-${index}`).addEventListener('click', e => {
+        e.stopPropagation();
+        currentIndex = (currentIndex - 1 + images.length) % images.length;
+        updateImage();
+      });
+
+      card.querySelector(`#next-${index}`).addEventListener('click', e => {
+        e.stopPropagation();
+        currentIndex = (currentIndex + 1) % images.length;
+        updateImage();
+      });
+
+      dots.forEach(dot => {
+        dot.addEventListener('click', e => {
+          e.stopPropagation();
+          currentIndex = parseInt(dot.getAttribute('data-i'));
+          updateImage();
+        });
+      });
+
+      card.onclick = () => showProcesses(proj.code);
+      container.appendChild(card);
+    });
+  }
+
+  function showProcesses(projectCode) {
+    const processes = allData.faraindha.filter(p => p.code == projectCode);
+    const list = document.getElementById('processList');
+    list.innerHTML = '';
+    
+    processes.forEach(p => {
+      const item = document.createElement('div');
+      item.className = 'process-card';
+      item.innerHTML = `
+        <div class="process-icon">
+          <i class="fas fa-project-diagram"></i>
+        </div>
+        <div class="process-info">
+          <div class="process-number">فرایند ${p.processNumber}</div>
+          <div class="process-name">${p.processName}</div>
+        </div>
+        <i class="fas fa-chevron-left" style="color: #ccc;"></i>
+      `;
+      item.onclick = () => showDetails(p);
+      list.appendChild(item);
+    });
+    
+    openModal('processModal');
+  }
+
+  // در بخش JavaScript توابع جدید را اضافه کنید
+  let currentProcessDetails = null;
+
+  function showDetails(process) {
+    const project = allData.unique.find(p => p.code == process.code);
+    const count = project ? project.count : 'نامشخص';
+    
+    currentProcessDetails = {
+      code: process.code,
+      processNumber: process.processNumber,
+      processName: process.processName,
+      count: count,
+      price: process.price,
+      date: process.date || new Date().toLocaleDateString('fa-IR')
+    };
+
+    document.getElementById('fCode').value = currentProcessDetails.code;
+    document.getElementById('fNumber').value = currentProcessDetails.processNumber;
+    document.getElementById('fName').value = currentProcessDetails.processName;
+    
+    // فیلد تعداد قابل ویرایش و با دکمه یک سایز
+    const countInput = document.getElementById('fCount');
+    countInput.value = currentProcessDetails.count;
+    countInput.readOnly = false; // قابل ویرایش
+    countInput.style.backgroundColor = '#fff'; // پس‌زمینه سفید
+    countInput.style.border = '1px solid #ddd'; // حاشیه مشخص
+    
+    // بقیه فیلدها
+    const priceInput = document.getElementById('fPrice');
+    if (currentProcessDetails.price && !isNaN(currentProcessDetails.price)) {
+      const priceNumber = parseInt(currentProcessDetails.price) || 0;
+      const formattedPrice = Number(priceNumber).toLocaleString('fa-IR') + ' ریال';
+      priceInput.value = formattedPrice;
+      priceInput.style.backgroundColor = '#e6f7e6';
+    } else {
+      priceInput.value = 'قیمت نامشخص';
+      priceInput.style.backgroundColor = '#ffebee';
+    }
+    
+    document.getElementById('fDate').value = currentProcessDetails.date;
+    
+    openModal('detailModal');
+  }
+
+  // تابع تقسیم مقدار تعداد بر دو
+  function divideCountByTwo() {
+    const countInput = document.getElementById('fCount');
+    const currentValue = parseFloat(countInput.value);
+    
+    if (!isNaN(currentValue)) {
+      const newValue = currentValue / 2;
+      countInput.value = Number.isInteger(newValue) ? newValue : newValue.toFixed(1);
+      currentProcessDetails.count = countInput.value; // به‌روزرسانی مقدار در داده‌ها
+      
+      // نمایش پیام تأیید
+      showMessage('تعداد با موفقیت نصف شد');
+    } else {
+      showMessage('مقدار تعداد نامعتبر است');
+    }
+  }
+
+  function copyProcessDetails() {
+    if (!currentProcessDetails) {
+      alert('اطلاعاتی برای کپی وجود ندارد!');
+      return;
+    }
+
+    const text = 
+      `کد کار: ${currentProcessDetails.code}\n` +
+      `نام فرایند: ${currentProcessDetails.processName}\n` +
+      `شماره فرایند: ${currentProcessDetails.processNumber}\n` +
+      `تعداد کار: ${currentProcessDetails.count}\n` +
+      `قیمت: ${currentProcessDetails.price}\n` +
+      `تاریخ: ${currentProcessDetails.date}`;
+
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        showMessage('اطلاعات با موفقیت کپی شد!');
+      })
+      .catch(err => {
+        console.error('خطا در کپی اطلاعات:', err);
+        showMessage('خطا در کپی اطلاعات');
+      });
+  }
+
+  function shareProcessVia(app) {
+    if (!currentProcessDetails) {
+      alert('اطلاعاتی برای اشتراک‌گذاری وجود ندارد!');
+      return;
+    }
+
+    const text = encodeURIComponent(
+      `کد کار: ${currentProcessDetails.code}\n` +
+      `نام فرایند: ${currentProcessDetails.processName}\n` +
+      `شماره فرایند: ${currentProcessDetails.processNumber}\n` +
+      `تعداد کار: ${currentProcessDetails.count}\n` +
+      `قیمت: ${currentProcessDetails.price}\n` +
+      `تاریخ: ${currentProcessDetails.date}`
+    );
+
+    let url = '';
+    if (app === 'telegram') {
+      url = `https://t.me/share/url?url=&text=${text}`;
+    } else if (app === 'whatsapp') {
+      url = `https://wa.me/?text=${text}`;
+    }
+
+    window.open(url, '_blank');
+  }
+
+  async function shareProcessWithWebAPI() {
+    if (!currentProcessDetails) {
+      alert('اطلاعاتی برای اشتراک‌گذاری وجود ندارد!');
+      return;
+    }
+
+    const text = 
+      `کد کار: ${currentProcessDetails.code}\n` +
+      `نام فرایند: ${currentProcessDetails.processName}\n` +
+      `شماره فرایند: ${currentProcessDetails.processNumber}\n` +
+      `تعداد کار: ${currentProcessDetails.count}\n` +
+      `قیمت: ${currentProcessDetails.price}\n` +
+      `تاریخ: ${currentProcessDetails.date}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'اطلاعات فرایند',
+          text: text,
+        });
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          showMessage('اشتراک‌گذاری لغو شد یا خطا رخ داد.');
+        }
+      }
+    } else {
+      copyProcessDetails();
+      showMessage('مرورگر شما از اشتراک‌گذاری مستقیم پشتیبانی نمی‌کند.\nمتن در کلیپ‌بورد کپی شد!');
+    }
+  }
+  
+  function openModal(id) {
+  const modal = document.getElementById(id);
+  if (!modal) return;
+
+  modal.style.display = 'flex';
+  document.body.classList.add('no-scroll');
+
+  // حتی اگر modal تکراری بود، باز هم push کن
+  history.pushState({ modal: id }, '', '');
+}
+
+function closeModal(id) {
+  const modal = document.getElementById(id);
+  if (!modal) return;
+
+  modal.style.display = 'none';
+  document.body.classList.remove('no-scroll');
+
+  // فقط history عقب نرو اگر user دستی زد
+  if (history.state && history.state.modal === id) {
+    history.back(); // این باعث فعال شدن popstate هم میشه
+  }
+}
+
+const modalIds = ['processModal', 'detailModal'];
+
+  async function loadInitialData() {
+    const cached = loadFromCache();
+    if (cached) {
+      allData = cached;
+      renderProjects(allData.unique);
+    }
+
+    const serverData = await fetchFromServer();
+
+    if (!cached || JSON.stringify(cached.unique) !== JSON.stringify(serverData.unique)) {
+      saveToCache(serverData);
+      allData = serverData;
+      renderProjects(serverData.unique);
+      showMessage('پروژه جدید اضافه شد');
+    }
+  }
+
+  async function refreshData() {
+    // افزودن انیمیشن به دکمه بروزرسانی
+    const refreshBtn = document.getElementById('refreshBtn');
+    refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    refreshBtn.style.backgroundColor = '#3a7bc8';
+    
+    try {
+      const data = await fetchFromServer();
+      allData = data;
+      saveToCache(data);
+      renderProjects(data.unique);
+      showMessage('اطلاعات با موفقیت بروزرسانی شد');
+      
+      // بازگرداندن دکمه به حالت اولیه
+      setTimeout(() => {
+        refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i>';
+        refreshBtn.style.backgroundColor = 'var(--primary-color)';
+      }, 1000);
+    } catch (error) {
+      showMessage('خطا در بروزرسانی اطلاعات');
+      refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i>';
+      refreshBtn.style.backgroundColor = 'var(--primary-color)';
+    }
+  }
+  
+  // متغیر برای ذخیره فرایندهای اصلی
+let originalProcesses = [];
+
+// تابع فیلتر کردن فرایندها
+function filterProcesses(searchTerm) {
+  const filtered = originalProcesses.filter(p => 
+    p.processName.includes(searchTerm) || 
+    p.processNumber.toString().includes(searchTerm)
+  );
+  
+  renderProcessList(filtered);
+}
+
+// تابع رندر لیست فرایندها
+function renderProcessList(processes) {
+  const list = document.getElementById('processList');
+  list.innerHTML = '';
+  
+  processes.forEach(p => {
+    const item = document.createElement('div');
+    item.className = 'process-card';
+    item.innerHTML = `
+      <div class="process-icon">
+        <i class="fas fa-project-diagram"></i>
+      </div>
+      <div class="process-info">
+        <div class="process-number">فرایند ${p.processNumber}</div>
+        <div class="process-name">${p.processName}</div>
+      </div>
+      <i class="fas fa-chevron-left" style="color: #ccc;"></i>
+    `;
+    item.onclick = () => showDetails(p);
+    list.appendChild(item);
+  });
+}
+
+// تغییرات در تابع showProcesses
+function showProcesses(projectCode) {
+  originalProcesses = allData.faraindha.filter(p => p.code == projectCode);
+  renderProcessList(originalProcesses);
+  
+  // تنظیم رویدادهای جستجو
+  const searchInput = document.getElementById('processSearch');
+  const clearBtn = document.getElementById('clearSearch');
+  
+  searchInput.addEventListener('input', (e) => {
+    const term = e.target.value.trim();
+    if (term) {
+      filterProcesses(term);
+      clearBtn.style.display = 'block';
+    } else {
+      renderProcessList(originalProcesses);
+      clearBtn.style.display = 'none';
+    }
+  });
+  
+  clearBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    renderProcessList(originalProcesses);
+    clearBtn.style.display = 'none';
+    searchInput.focus();
+  });
+  
+  openModal('processModal');
+}
+
+window.addEventListener('popstate', (event) => {
+  const openModals = modalIds.filter(id => {
+    const el = document.getElementById(id);
+    return el && el.style.display === 'flex';
+  });
+
+  if (openModals.length > 0) {
+    const lastModal = openModals[openModals.length - 1];
+    const modal = document.getElementById(lastModal);
+    modal.style.display = 'none';
+    document.body.classList.remove('no-scroll');
+  }
+});
+
+  window.addEventListener('load', loadInitialData);
+</script>
+</body>
+</html>
